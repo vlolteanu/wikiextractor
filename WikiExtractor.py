@@ -516,11 +516,9 @@ class Extractor(object):
         :param out: a memory file.
         """
         logging.info('%s\t%s', self.id, self.title)
+        prefix = '{' + self.title + '} '
         url = get_url(self.id)
-        if Extractor.print_revision:
-            header = '<doc id="%s" revid="%s" url="%s" title="%s">\n' % (self.id, self.revid, url, self.title)
-        else:
-            header = '<doc id="%s" url="%s" title="%s">\n' % (self.id, url, self.title)
+        header = prefix
         # Separate header from text with a newline.
         if self.toHTML:
             header += '<h1>' + self.title + '</h1>\n'
@@ -547,13 +545,14 @@ class Extractor(object):
         text = self.wiki2text(text)
 
         text = compact(self.clean(text))
-        footer = "\n</doc>\n"
+        footer = "\n"
         if sum(len(line) for line in text) < Extractor.min_text_length:
             return
         if out == sys.stdout:   # option -a or -o -
             header = header.encode('utf-8')
         out.write(header)
         for line in text:
+	    line = prefix + line
             if out == sys.stdout:   # option -a or -o -
                 line = line.encode('utf-8')
             out.write(line)
